@@ -11,7 +11,7 @@ async function execute() {
 
   try {
     await client.connect();
-    while (searchTerm > 0) {
+    while (searchTerm) {
       if (searchTerm === 1) {
         let searchMovie = await question(`Search term: `);
         console.log("connected");
