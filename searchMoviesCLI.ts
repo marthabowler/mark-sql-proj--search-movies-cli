@@ -7,12 +7,12 @@ import { Client } from "pg";
 const client = new Client({ database: "omdb" });
 
 async function execute() {
-  let searchTerm = await keyInSelect(["Search", "See Favourites", "Quit"]);
+  let searchTerm = keyInSelect(["Search", "See Favourites"]) + 1;
 
   try {
     await client.connect();
-    while (searchTerm !== 2) {
-      if (searchTerm === 0) {
+    while (searchTerm > 0) {
+      if (searchTerm === 1) {
         let searchMovie = await question(`Search term: `);
         console.log("connected");
         let text =
@@ -22,7 +22,7 @@ async function execute() {
         console.table(res.rows);
 
         const searchedMovies = res.rows.map((field) => field.name);
-        const addFav = await keyInSelect(
+        const addFav = keyInSelect(
           searchedMovies,
           "Choose a movie row number to favourite or press 0"
         );
@@ -33,14 +33,14 @@ async function execute() {
           res = await client.query(text, values);
         }
       }
-      if (searchTerm === 1) {
+      if (searchTerm === 2) {
         console.log("connected");
         const text =
           "select  name, date, runtime, budget, revenue, vote_average, votes_count from movies join favourites on movies.id = favourites.movie_id";
         const res = await client.query(text);
         console.table(res.rows);
       }
-      searchTerm = await keyInSelect(["Search", "See Favourites", "Quit"]);
+      searchTerm = keyInSelect(["Search", "See Favourites"]) + 1;
     }
   } catch (ex) {
     console.log(`something wrong happened ${ex}`);
