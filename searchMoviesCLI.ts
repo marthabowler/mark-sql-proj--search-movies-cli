@@ -8,21 +8,31 @@ const client = new Client({ database: "omdb" });
 
 async function execute() {
   let searchTerm = await question(
-    'Please enter a value to search or "q" to quit '
+    `[1] Search
+[2] See Favourites
+[3] Quit `
   );
 
   try {
     await client.connect();
-    while (searchTerm !== "q") {
-      console.log("connected");
-      const text =
-        "select id, name, date, runtime, budget, revenue, vote_average, votes_count from movies where LOWER(name) like $1";
-      const values = [`%${searchTerm.toLowerCase()}%`];
-      const res = await client.query(text, values);
-      console.table(res.rows);
-      searchTerm = await question(
-        'Please enter another value to search or "q" to quit '
-      );
+    while (searchTerm !== "3") {
+      if (searchTerm === "1") {
+        let searchMovie = await question(`Search term: `);
+        console.log("connected");
+        const text =
+          "select  id, name, date, runtime, budget, revenue, vote_average, votes_count from movies where LOWER(name) like $1";
+        const values = [`%${searchMovie.toLowerCase()}%`];
+        const res = await client.query(text, values);
+        console.table(res.rows);
+        break;
+      }
+      if (searchTerm === "2") {
+        console.log("connected");
+        const text = "select  * from favourites";
+        const res = await client.query(text);
+        console.table(res.rows);
+        break;
+      }
     }
   } catch (ex) {
     console.log(`something wrong happened ${ex}`);
