@@ -26,11 +26,11 @@ async function execute() {
           searchedMovies,
           "Choose a movie row number to favourite or press 0"
         );
-        if (addFav > -1) {
+        if (addFav > 0) {
           let text = `insert into favourites values(DEFAULT,$1)`;
           let values = [res.rows[addFav].id];
+          await client.query(text, values);
           console.log(`Saving favourite movie: ${res.rows[addFav].name}`);
-          res = await client.query(text, values);
         }
       }
       if (searchTerm === 2) {
