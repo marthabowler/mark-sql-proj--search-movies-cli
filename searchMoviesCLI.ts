@@ -16,19 +16,19 @@ async function execute() {
         let searchMovie = await question(`Search term: `);
         console.log("connected");
         let text =
-          "select  id, name, date, runtime, budget, revenue, vote_average, votes_count from movies where LOWER(name) like $1 LIMIT 9";
+          "select DISTINCT movie_id, movie_name, date, runtime, budget, revenue, vote_average, votes_count from casts_view where LOWER(movie_name) LIKE $1 OR LOWER(person_name) LIKE $1 AND job_id = 15 AND position =1 LIMIT 9";
         let values = [`%${searchMovie.toLowerCase()}%`];
         let res = await client.query(text, values);
         console.table(res.rows);
 
-        const searchedMovies = res.rows.map((field) => field.name);
+        const searchedMovies = res.rows.map((field) => field.movie_name);
         const addFav = keyInSelect(
           searchedMovies,
           "Choose a movie row number to favourite or press 0"
         );
         if (addFav > 0) {
-          let text = `insert into favourites values(DEFAULT,$1)`;
-          let values = [res.rows[addFav].id];
+          text = `insert into favourites values(DEFAULT,$1)`;
+          values = [res.rows[addFav].id];
           await client.query(text, values);
           console.log(`Saving favourite movie: ${res.rows[addFav].name}`);
         }
